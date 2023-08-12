@@ -1,6 +1,6 @@
-# Marketplace
+# Authentication
 
-This is marketplace code repo.
+This is authentication code for Next 13 application.
 
 Following were the frameworks and libraries used:
 

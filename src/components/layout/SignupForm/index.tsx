@@ -10,6 +10,7 @@ import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
 import { CustomCalendar } from '@/components/ui/Calender';
 import { UserClientService } from '@/services/client/user';
 import { useRouter } from 'next/navigation';
+import { BiRefresh } from 'react-icons/bi';
 
 type FormData = {
     firstName: string;
@@ -23,6 +24,7 @@ type FormData = {
 function SignUpForm() {
     const [showPass, setShowPass] = React.useState<boolean>(true);
     const [showConfirmPass, setShowConfirmPass] = React.useState<boolean>(true);
+    const [loader, setloader] = React.useState<boolean>(false);
     const { replace } = useRouter();
     const schema: ZodType<FormData> = z
         .object({
@@ -49,6 +51,7 @@ function SignUpForm() {
 
     const submitData = (data: FormData) => {
         try {
+            setloader(true);
             UserClientService.registerUser({
                 firstName: data.firstName,
                 lastName: data.lastName,
@@ -60,6 +63,8 @@ function SignUpForm() {
             replace('/verifyOtp');
         } catch (err) {
             console.log(err);
+        } finally {
+            setloader(false);
         }
     };
 
@@ -148,8 +153,12 @@ function SignUpForm() {
                 </div>
                 {/***** Button *****/}
                 <div className="flex flex-col gap-[0.4rem] items-center">
-                    <button type="submit" className="w-full h-[3rem] red-gradient text-white font-medium rounded-full">
-                        Register
+                    <button
+                        type="submit"
+                        className="flex items-center justify-center w-full h-[3rem] mt-[1rem] font-medium rounded-full red-gradient text-white"
+                    >
+                        <span className="mr-[0.25rem]">Register</span>
+                        <span className="text-white">{loader && <BiRefresh className="text-2xl rotate-circular" />}</span>
                     </button>
                     <p className="text-darkBlue text-sm">
                         Already have an account?{' '}

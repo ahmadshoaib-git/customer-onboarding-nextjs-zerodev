@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { AiFillEyeInvisible, AiFillEye } from 'react-icons/ai';
 import { UserClientService } from '@/services/client/user';
 import { useRouter } from 'next/navigation';
+import { BiRefresh } from 'react-icons/bi';
 
 type FormData = {
     email: string;
@@ -16,6 +17,7 @@ type FormData = {
 
 function SignInForm() {
     const [showPass, setShowPass] = React.useState<boolean>(true);
+    const [loader, setloader] = React.useState<boolean>(false);
     const schema: ZodType<FormData> = z.object({
         email: z.string().email(),
         password: z.string().min(5).max(20),
@@ -32,11 +34,14 @@ function SignInForm() {
 
     const submitData = async (data: FormData) => {
         try {
+            setloader(true);
             const res = await UserClientService.loginUser(data?.email, data?.password);
             console.log('IT WORKED', JSON.stringify(data));
             if (res?.redirect) replace(res?.redirect);
         } catch (err) {
             console.log(err);
+        } finally {
+            setloader(false);
         }
     };
 
@@ -66,8 +71,12 @@ function SignInForm() {
                     {errors.password && <span className={errorText}> *{errors.password.message}</span>}
                 </div>
                 <div className="flex flex-col gap-[0.4rem] items-center">
-                    <button type="submit" className="w-full h-[3rem] red-gradient text-white font-medium rounded-full">
-                        Sign In
+                    <button
+                        type="submit"
+                        className="flex items-center justify-center w-full h-[3rem] mt-[1rem] font-medium rounded-full red-gradient text-white"
+                    >
+                        <span className="mr-[0.25rem]">Sign In</span>
+                        <span className="text-white">{loader && <BiRefresh className="text-2xl rotate-circular" />}</span>
                     </button>
                     <p className="text-darkBlue text-sm">
                         New Member?{' '}

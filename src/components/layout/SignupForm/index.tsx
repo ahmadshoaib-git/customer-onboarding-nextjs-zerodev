@@ -11,6 +11,7 @@ import { CustomCalendar } from '@/components/ui/Calender';
 import { UserClientService } from '@/services/client/user';
 import { useRouter } from 'next/navigation';
 import { BiRefresh } from 'react-icons/bi';
+import toast from 'react-hot-toast';
 
 type FormData = {
     firstName: string;
@@ -24,7 +25,7 @@ type FormData = {
 function SignUpForm() {
     const [showPass, setShowPass] = React.useState<boolean>(true);
     const [showConfirmPass, setShowConfirmPass] = React.useState<boolean>(true);
-    const [loader, setloader] = React.useState<boolean>(false);
+    const [loader, setLoader] = React.useState<boolean>(false);
     const { replace } = useRouter();
     const schema: ZodType<FormData> = z
         .object({
@@ -49,22 +50,30 @@ function SignUpForm() {
         resolver: zodResolver(schema),
     });
 
-    const submitData = (data: FormData) => {
+    const submitData = async (data: FormData) => {
         try {
-            setloader(true);
-            UserClientService.registerUser({
+            setLoader(true);
+            const res = await UserClientService.registerUser({
                 firstName: data.firstName,
                 lastName: data.lastName,
                 dob: data.dob,
                 email: data.email,
                 password: data?.password,
             });
-            console.log('IT WORKED', JSON.stringify(data));
-            replace('/verifyOtp');
+            console.log(await res.json());
+            if (res.ok) {
+                toast.success(`User registered successfully, please verify via OTP sent on your email ${data.email}`);
+                replace('/verifyOtp');
+            } else {
+                const { error } = await res.json();
+                toast.error(error);
+            }
+            console.log(res);
         } catch (err) {
+            toast.error(`Unable to register user.`);
             console.log(err);
         } finally {
-            setloader(false);
+            setLoader(false);
         }
     };
 

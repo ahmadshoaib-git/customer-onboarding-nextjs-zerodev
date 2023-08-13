@@ -9,7 +9,9 @@ export class UserService {
     static async createUser(user: NewUser) {
         try {
             const tempUser = { ...user };
-            tempUser.userPassword = await bcrypt.hash(user.userPassword, 5);
+            //hash password
+            const salt = await bcrypt.genSalt(10); //genSalt will create a salt with the 10 rounds - Salt is a cryptographically secure random string that is added to a password before it's hashed,
+            tempUser.userPassword = await bcrypt.hash(user.userPassword, salt);
             await createUserScheme();
             console.log(tempUser);
             const insertedUser = await db.insert(userSchema).values(tempUser).returning();

@@ -4,6 +4,7 @@ import OtpInput from 'react18-input-otp';
 import { UserClientService } from '@/services/client/user';
 import { useRouter } from 'next/navigation';
 import { BiRefresh } from 'react-icons/bi';
+import toast from 'react-hot-toast';
 
 interface Props {
     email: string;
@@ -32,7 +33,16 @@ function VerifyOtpForm({ email, token }: Props) {
             if (verifyOtpLoading || redirectLoginLoading) return;
             setVerifyOtpLoading(true);
             if (!token || !otp) return;
-            await UserClientService.verifyUser(token, otp);
+            const res = await UserClientService.verifyUser(token, otp);
+            console.log(res);
+            if (res.ok) {
+                console.log(res.body);
+                toast.success(`User verified and logged in successfully!`);
+                replace('/');
+            } else {
+                const { error } = await res.json();
+                toast.error(error);
+            }
         } catch (err) {
             console.log(err);
         } finally {
@@ -46,9 +56,8 @@ function VerifyOtpForm({ email, token }: Props) {
             if (verifyOtpLoading || redirectLoginLoading) return;
             setRedirectLoginLoading(true);
             if (!token) return;
-            debugger;
             await UserClientService.verifyUserLogout(token);
-            replace('/verifyOtp');
+            replace('/Login');
         } catch (err) {
             console.log(err);
         } finally {

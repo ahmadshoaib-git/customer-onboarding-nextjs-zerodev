@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
         const existingUserData = await UserService.getUser(email);
         if (existingUserData.length === 0) return NextResponse.json({ error: 'Unable to verify, user does not exists.' }, { status: 400 });
         if (existingUserData[0].otp !== otp) return NextResponse.json({ error: 'Unable to verify, invalid otp.' }, { status: 400 });
-        UserService.verifyUser(email);
+        await UserService.verifyUser(email);
         const accessToken = jwt.sign(
             {
                 id: existingUserData[0].id,

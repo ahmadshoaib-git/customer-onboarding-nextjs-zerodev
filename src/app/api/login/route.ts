@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken';
 import { NextRequest, NextResponse } from 'next/server';
 import { userValidator } from './login.validation';
 import { UserService } from '@/services/server/user';
+import bcrypt from 'bcrypt';
 
 export async function POST(request: NextRequest) {
     try {
@@ -27,7 +28,8 @@ export async function POST(request: NextRequest) {
             });
             return response;
         }
-        UserService.verifyUser(email);
+        const isValidPassword = await bcrypt.compare(password, existingUserData[0].userPassword);
+        if (!isValidPassword) return NextResponse.json({ error: 'Invalid password' }, { status: 401 });
         const accessToken = jwt.sign(
             {
                 id: existingUserData[0].id,

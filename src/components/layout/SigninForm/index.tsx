@@ -1,5 +1,6 @@
 'use client';
 import React from 'react';
+import toast from 'react-hot-toast';
 import { Input } from '@/components/ui';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -37,7 +38,8 @@ function SignInForm() {
             setloader(true);
             const res = await UserClientService.loginUser(data?.email, data?.password);
             console.log('IT WORKED', JSON.stringify(data));
-            if (res?.redirect) replace(res?.redirect);
+            const response = await res.json();
+            if (response?.redirect) replace(response?.redirect);
         } catch (err) {
             console.log(err);
         } finally {

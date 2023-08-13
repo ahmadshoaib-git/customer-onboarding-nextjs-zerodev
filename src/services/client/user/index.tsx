@@ -6,7 +6,7 @@ import { StringChunk } from 'drizzle-orm';
 export class UserClientService {
     static async registerUser(user: IUser) {
         try {
-            await fetch(`${getBaseUrl()}/api/register`, {
+            return await fetch(`${getBaseUrl()}/api/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -20,7 +20,7 @@ export class UserClientService {
     }
     static async loginUser(email: string, password: string) {
         try {
-            const response = await fetch(`${getBaseUrl()}/api/login`, {
+            return fetch(`${getBaseUrl()}/api/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -30,7 +30,6 @@ export class UserClientService {
                     password: password,
                 }),
             });
-            return response.json();
         } catch (error) {
             console.error('Error calling API:', error);
             throw error;
@@ -38,7 +37,7 @@ export class UserClientService {
     }
     static async verifyUser(token: string, otp: string) {
         try {
-            const response = await fetch(`${getBaseUrl()}/api/verifyOtp`, {
+            return fetch(`${getBaseUrl()}/api/verifyOtp`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -48,7 +47,6 @@ export class UserClientService {
                     otp: otp,
                 }),
             });
-            return response.json();
         } catch (error) {
             console.error('Error calling API:', error);
             throw error;
@@ -56,14 +54,13 @@ export class UserClientService {
     }
     static async verifyUserLogout(token: string) {
         try {
-            const response = await fetch(`${getBaseUrl()}/api/verifyOtp/logout`, {
+            return await fetch(`${getBaseUrl()}/api/verifyOtp/logout`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: token,
                 },
             });
-            return response.json();
         } catch (error) {
             console.error('Error calling API:', error);
             throw error;
